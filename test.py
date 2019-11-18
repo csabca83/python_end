@@ -1,3 +1,3 @@
 print("Hello world")
 
-test = test2
+test = "test2"
