@@ -6,8 +6,9 @@ asd = "asd2"
 
 asd2 = 'asd'
 
-while True:
-    print(test)
-
-def valami(self):
+def valami():
     print("32")
+
+valami = valami()
+
+print (valami)
