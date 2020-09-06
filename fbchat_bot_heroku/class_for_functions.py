@@ -22,7 +22,7 @@ class Functions:
                                                                             any other guy\nI just wanna tell you how I'm feeling\nGotta make you understand\n\
                                                                             Never gonna give you up\nNever gonna let you down\nNever gonna run around and desert \
                                                                             you\nNever gonna make you cry\nNever gonna say goodbye\nNever gonna tell a lie and hurt you"]).start()
-        threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', '329441454964466']).start()
+        threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', '320946389156236']).start()
 
     
     def function3(self, user_id):
@@ -32,7 +32,7 @@ class Functions:
         import threading
 
         bot = Bot(self.ACCESS_TOKEN)
-        threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', '4252880948086447']).start()
+        threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', '372593837093422']).start()
 
     def function4(self, user_id):
         from bs4 import BeautifulSoup
@@ -76,4 +76,39 @@ class Functions:
             kozos.append(wrap_text[while_loop].a.get('href'))
             kozos.append('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
             while_loop  = while_loop + 1
+        self.value = ('\n'.join(map(str, kozos)))
+
+    def function6(self, user_id):
+        from bs4 import BeautifulSoup
+        import requests
+
+        kozos = []
+
+        r = requests.get('https://transferwise.com/hu/currency-converter/huf-to-eur-rate')
+        s = requests.get('https://transferwise.com/hu/currency-converter/eur-to-huf-rate')
+
+        soup = BeautifulSoup(r.content, 'lxml')
+        soups = BeautifulSoup(s.content, 'lxml')
+
+        wrap_title_hufeur = soup.find('h3', class_="colored-dot")
+        wrap_text_hufeur = soup.find('h3', class_="cc__source-to-target hidden-xs")
+        wrap_title_eurhuf = soups.find('h3', class_="colored-dot")
+        wrap_text_eurhuf = soups.find('h3', class_="cc__source-to-target hidden-xs")
+
+        while_loop = 1
+
+        kozos.append(wrap_title_hufeur.text)
+
+        while int(while_loop) <= 3:
+            kozos.append(wrap_text_hufeur.find_all('span')[while_loop].text)
+            while_loop  = while_loop + 1
+
+        kozos.append('~~~~~~~~~~~~~~~~~~~~~~~~')
+
+        kozos.append(wrap_title_eurhuf.text)
+
+        while int(while_loop) <= 6:
+            kozos.append(wrap_text_eurhuf.find_all('span')[while_loop - 3].text)
+            while_loop  = while_loop + 1
+
         self.value = ('\n'.join(map(str, kozos)))
