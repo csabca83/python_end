@@ -152,4 +152,3 @@ class Functions:
                 kozos.append(items.find('strong', class_='felhos-text').text)
             while_loop  = while_loop + 1
         self.value = ('\n'.join(map(str, kozos)))
-#
