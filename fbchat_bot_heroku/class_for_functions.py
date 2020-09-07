@@ -30,9 +30,11 @@ class Functions:
 
         from bot import Bot
         import threading
+        from random import choice
 
         bot = Bot(self.ACCESS_TOKEN)
-        threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', '372593837093422']).start()
+        random_racoon = choice(['372593837093422', '344456233269789', '702376980356371', '947112995783361'])
+        threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', f'{random_racoon}']).start()
 
     def function4(self, user_id):
         from bs4 import BeautifulSoup
@@ -43,17 +45,27 @@ class Functions:
 
         soup = BeautifulSoup(r.content, 'lxml')
 
-        wrap_homerseklet = soup.find_all('p', class_="zivatar-text")
-        wrap_honap = soup.find_all('p', class_="atlag-info")
+        wrap_kilatasok = soup.find_all('div', class_='kilatasok-szoveg')
+        wrap_buborek_fejlec = soup.find_all('div', class_="buborek-fejlec")
+        wrap_buborek_oszlop = soup.find_all('div', class_="oszlop")
 
         kozos = []
+
+        kozos.append(wrap_kilatasok[0].h3.text)
+        kozos.append(wrap_kilatasok[0].find_all('p')[0].text)
+        kozos.append(wrap_kilatasok[0].find_all('p')[1].text)
+
         while_loop = 0
 
-        while int(while_loop) <= 10:
-            kozos.append(wrap_homerseklet[while_loop].text + "-------")
-            kozos.append(wrap_honap[while_loop].text)
+        while int(while_loop) <= 7:
+            kozos.append('~~~~~~~~~~~~~~')
+            kozos.append(wrap_buborek_fejlec[while_loop].text)
+            wrap_felhos_text = wrap_buborek_oszlop[while_loop].find_all('div', class_='buborek-text')
+            for items in wrap_felhos_text:
+                kozos.append(items.find('strong', class_='felhos-text').text)
             while_loop  = while_loop + 1
-        kozos.remove(kozos[0])
+
+
         self.value = ('\n'.join(map(str, kozos)))
 
     def function5(self, user_id):
@@ -63,8 +75,6 @@ class Functions:
         r = requests.get('https://index.hu/24ora')
 
         soup = BeautifulSoup(r.content, 'lxml')
-
-        soup.prettify()
 
         wrap_text = soup.find_all('div', class_="article-container")
 
@@ -112,3 +122,34 @@ class Functions:
             while_loop  = while_loop + 1
 
         self.value = ('\n'.join(map(str, kozos)))
+
+    def function7(self, user_id):
+        from bs4 import BeautifulSoup
+        import requests
+
+        r = requests.get('https://www.idokep.hu/30napos/Szeged')
+
+
+        soup = BeautifulSoup(r.content, 'lxml')
+
+        wrap_kilatasok = soup.find_all('div', class_='kilatasok-szoveg')
+        wrap_buborek_fejlec = soup.find_all('div', class_="buborek-fejlec")
+        wrap_buborek_oszlop = soup.find_all('div', class_="oszlop")
+
+        kozos = []
+
+        kozos.append(wrap_kilatasok[0].h3.text)
+        kozos.append(wrap_kilatasok[0].find_all('p')[0].text)
+        kozos.append(wrap_kilatasok[0].find_all('p')[1].text)
+
+        while_loop = 0
+
+        while int(while_loop) <= 7:
+            kozos.append('~~~~~~~~~~~~~~')
+            kozos.append(wrap_buborek_fejlec[while_loop].text)
+            wrap_felhos_text = wrap_buborek_oszlop[while_loop].find_all('div', class_='buborek-text')
+            for items in wrap_felhos_text:
+                kozos.append(items.find('strong', class_='felhos-text').text)
+            while_loop  = while_loop + 1
+        self.value = ('\n'.join(map(str, kozos)))
+
