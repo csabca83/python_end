@@ -122,8 +122,6 @@ class Functions:
             while_loop  = while_loop + 1
 
         self.value = ('\n'.join(map(str, kozos)))
-<<<<<<< HEAD
-=======
 
     def function7(self, user_id):
         from bs4 import BeautifulSoup
@@ -154,5 +152,4 @@ class Functions:
                 kozos.append(items.find('strong', class_='felhos-text').text)
             while_loop  = while_loop + 1
         self.value = ('\n'.join(map(str, kozos)))
-
->>>>>>> updated functions
+#
