@@ -62,7 +62,10 @@ class Functions:
             kozos.append(wrap_buborek_fejlec[while_loop].text)
             wrap_felhos_text = wrap_buborek_oszlop[while_loop].find_all('div', class_='buborek-text')
             for items in wrap_felhos_text:
-                kozos.append(items.find('strong', class_='felhos-text').text)
+                try:
+                    kozos.append(items.find('strong', class_='felhos-text').text)
+                except:
+                    kozos.append(items.find('strong', class_='felhos-text'))
             while_loop  = while_loop + 1
 
 
@@ -81,7 +84,7 @@ class Functions:
         kozos = []
         while_loop = 0
 
-        while int(while_loop) <= 4:
+        while int(while_loop) <= 2:
             kozos.append(wrap_text[while_loop].a.img.get('alt'))
             kozos.append(wrap_text[while_loop].a.get('href'))
             kozos.append('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
@@ -149,6 +152,40 @@ class Functions:
             kozos.append(wrap_buborek_fejlec[while_loop].text)
             wrap_felhos_text = wrap_buborek_oszlop[while_loop].find_all('div', class_='buborek-text')
             for items in wrap_felhos_text:
-                kozos.append(items.find('strong', class_='felhos-text').text)
+                try:
+                    kozos.append(items.find('strong', class_='felhos-text').text)
+                except:
+                    kozos.append(items.find('strong', class_='felhos-text'))
             while_loop  = while_loop + 1
         self.value = ('\n'.join(map(str, kozos)))
+
+    def function8(self, user_id):
+        from bs4 import BeautifulSoup
+        import requests
+
+        r = requests.get('https://www.worldometers.info/coronavirus/country/hungary')
+        s = requests.get('https://www.worldometers.info/coronavirus/country/slovakia')
+
+        kozos = []
+        soup2 = BeautifulSoup(s.content, 'lxml')
+        soup = BeautifulSoup(r.content, 'lxml')
+
+        wrap_text = soup.find_all('div', class_='content-inner')
+        wrap_text2 = soup2.find_all('div', class_='content-inner')
+
+        for items in wrap_text2:
+            kozos.append(
+                (
+                    (items).text
+                    ).strip()
+                    )
+
+        for items in wrap_text:
+            kozos.append(
+                (
+                    (items).text
+                    ).strip()
+                    )
+
+        self.value = ('\n'.join(map(str, kozos)))
+
