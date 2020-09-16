@@ -10,6 +10,7 @@ from contextlib import contextmanager
 from queryxlsx import Readexcel
 import os
 import threading
+import sys
 
 #Using contextmanager as a decorator for our function to safely open the file that contains the credentials
 
@@ -80,6 +81,11 @@ def webhook():
             #bot.send_text_message(int(user_id), r.random_answers)
         
         except:
+            error_list = []
+            for items in sys.exc_info():
+                error_list.append(items)
+            error = ('\n'.join(map(str, error_list)))
+            threading.Thread(target=bot.send_text_message, args=[f'{user_id}', f'{error}']).start()
             pass
 
 
