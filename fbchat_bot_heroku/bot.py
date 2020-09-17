@@ -28,7 +28,8 @@ class Bot(object):
 
         print(response.content)
         print(data)
-
+    
+    #This one is being manually, I haven't built a logic around this.
     def upload_image_url(self, image_url, messaging_type="RESPONSE"):
 
         headers = {
