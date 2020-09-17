@@ -34,7 +34,7 @@ app = Flask(__name__)
 
 #Creating a route for Flask to enable only GET and POST requests
 #Creating a function for the webhook(GET requests) where the webhook can be verified by facebook
-#If the request is not a verification from facebook then we use the else statement
+#If the request is not a verification from facebook then we use the else statement for POST requests
 
 @app.route('/', methods=['GET', 'POST'])
 
@@ -48,7 +48,7 @@ def webhook():
 
 
     else:
-        #Storing the GET request into a data and loading it up with json, since the request is in json format
+        #Storing the GET or POST request into a data and loading it up with json, since the request is in json format
         #Triggering the bot function that we can use to send data back + passing the access token parameter to it
         data = json.loads(request.data)
         bot = Bot(ACCESS_TOKEN)
@@ -77,20 +77,32 @@ def webhook():
             r.append_items_2(text_input=text_input)
             r.find_answer(user_id)
             #Picking the random answers from the Readexcel module and sending it back to the sender with an access token by using the Bot class
-            threading.Thread(target=bot.send_text_message, args=[f'{user_id}', f'{r.random_answers}']).start()
-            #bot.send_text_message(int(user_id), r.random_answers)
+            #This is the first threading that we can see, so if we receive multiple requests at the time all of them will be processed in a
+            #different thread. (Threading is also being used in other places)
+            if r.random_answers == "":
+
+                print('\x1b[6;30;42m' + "~~~~~ Value had no text, skipping the text delivery ~~~~~" + '\x1b[0m')
+
+            else:
+
+                threading.Thread(target=bot.send_text_message, args=[f'{user_id}', f'{r.random_answers}']).start()
+                print('\x1b[6;30;42m' + "~~~~~ Successful text delivery ~~~~~" + '\x1b[0m')
         
+        #Error handling around the script and sending the error back through a message
         except:
+            print('\x1b[0;30;41m' + "!!! Something went wrong !!!" + '\x1b[0m')
             error_list = []
             for items in sys.exc_info():
                 error_list.append(items)
             error = ('\n'.join(map(str, error_list)))
+            threading.Thread(target=bot.send_text_message, args=[f'{user_id}', '🤖!!ERROR!!🤖']).start()
             threading.Thread(target=bot.send_text_message, args=[f'{user_id}', f'{error}']).start()
             pass
 
 
         return '200'
-
+#Running the flask app on 0.0.0.0 host with the Port that was being assigned by heroku
+#The port 5000 will be replaced once heroku assigns a port to our server
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

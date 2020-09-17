@@ -5,6 +5,8 @@ class Functions:
 
 
     def function1(self, user_id):
+        #Showing the current time, but the local time on the server is -2hours than mine, so i just simply
+        #added +2hours in seconds.
         import time
         t = time.localtime(time.time() + 7200)
         self.value = time.strftime("%H:%M:%S", t)
@@ -16,13 +18,18 @@ class Functions:
         import threading
 
         #RICK ASTLEEEEY#
+        #I used the upload_image_url function manually to upload the gif,
+        #once i have an 'attachment id' i can use it to send the gif back
+        #with the send_image_by_id function.(the same logic is being applied underneath of this function)
         bot = Bot(self.ACCESS_TOKEN)
-        threading.Thread(target=bot.send_text_message, args=[f'{user_id}', "We're no strangers to love\nYou know the rules and so do I\n \
+        self.value =                                                       "We're no strangers to love\nYou know the rules and so do I\n \
                                                                             A full commitment's what I'm thinking of\nYou wouldn't get this from \
                                                                             any other guy\nI just wanna tell you how I'm feeling\nGotta make you understand\n\
                                                                             Never gonna give you up\nNever gonna let you down\nNever gonna run around and desert \
-                                                                            you\nNever gonna make you cry\nNever gonna say goodbye\nNever gonna tell a lie and hurt you"]).start()
+                                                                            you\nNever gonna make you cry\nNever gonna say goodbye\nNever gonna tell a lie and hurt you"
         threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', '320946389156236']).start()
+
+        print('\x1b[6;30;42m' + "~~~~~ Successfully delivered the attachment ~~~~~" + '\x1b[0m')
 
     
     def function3(self, user_id):
@@ -36,9 +43,14 @@ class Functions:
         random_racoon = choice(['372593837093422', '344456233269789', '702376980356371', '947112995783361'])
         threading.Thread(target=bot.send_image_by_id, args=[f'{user_id}', f'{random_racoon}']).start()
 
+        print('\x1b[6;30;42m' + "~~~~~ Successfully delivered the attachment ~~~~~" + '\x1b[0m')
+
     def function4(self, user_id):
         from bs4 import BeautifulSoup
         import requests
+        #Webscraping with BeautifulSoup
+        #Using Beautifulsoup because simply the LXML parser with Xpath cannot find the requered items based
+        #on the given xpath.(the same logic is being applied underneath of this function)
 
         r = requests.get('https://www.idokep.hu/30napos/Budapest')
 
