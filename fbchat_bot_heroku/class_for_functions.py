@@ -96,10 +96,16 @@ class Functions:
         kozos = []
         while_loop = 0
 
-        while int(while_loop) <= 2:
-            kozos.append(wrap_text[while_loop].a.img.get('alt'))
-            kozos.append(wrap_text[while_loop].a.get('href'))
-            kozos.append('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+        while int(while_loop) <= 10:
+            try:
+
+                kozos.append(wrap_text[while_loop].a.img.get('alt'))
+                kozos.append(wrap_text[while_loop].a.get('href'))
+                kozos.append('~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+
+            except:
+                pass
+
             while_loop  = while_loop + 1
         self.value = ('\n'.join(map(str, kozos)))
 
@@ -200,4 +206,16 @@ class Functions:
                     )
 
         self.value = ('\n'.join(map(str, kozos)))
+
+    def function9(self, user_id):
+        from heroku_scheduler import check_cron, run_functions
+    
+        dicto = check_cron()
+        if dicto['state'] == True:
+            run_functions(dicto['state'], dicto['ACCESS_TOKEN'], dicto['USER_ID_1'], dicto['USER_ID_2'])
+            print('\x1b[6;30;42m' + "~~~~~ CRON TEST WAS SUCCESSFUL ~~~~~" + '\x1b[0m')
+            self.value = "Sikeres teszt :)"
+        else:
+            self.value = 'Cron False értékkel rendelkezik, írd be messengerbe, hogy "cron info", ha tudni akarod hogyan kell kezelni'
+    
 

@@ -3,30 +3,36 @@
 #The other modules, classes and functions will be imported from other locations, like the Readexcel class
 
 from flask import Flask, request
-import json
-import urllib
+import json, urllib
 from bot import Bot
 from contextlib import contextmanager
 from queryxlsx import Readexcel
-import os
-import threading
-import sys
+import os, threading, sys
 
-#Using contextmanager as a decorator for our function to safely open the file that contains the credentials
+#Creating a function for JSON data extracting, so it can be used in other modules as well.
+def extract_json():
 
-@contextmanager
-def file(filename, method):
-    file = open(filename, method)
-    yield file
-    file.close()
+    #Using contextmanager as a decorator for our function to safely open the file that contains the credentials
+    @contextmanager
+    def file(filename, method):
+        file = open(filename, method)
+        yield file
+        file.close()
 
-with file("tokens.json", "r") as f:
-    json_data = json.load(f)
+    with file("tokens.json", "r") as f:
+        json_data = json.load(f)
+    
+    dicto = {}
+    dicto['ACCESS_TOKEN'] = json_data['ACCESS_TOKEN']; dicto['VERIFY_TOKEN'] = json_data['VERIFY_TOKEN']
+    dicto['ADRI'] = json_data['ADRI']; dicto['CSABI'] = json_data['CSABI']
+    #Returning the data as a dictionary, it's easier to manage the data and we don't have to call the function
+    #every time when we need some key-value
+    return dicto
 
-
-
-ACCESS_TOKEN = json_data['ACCESS_TOKEN']
-VERIFY_TOKEN = json_data['VERIFY_TOKEN']
+#Adding the function to a variable so it will be called just once, then the data is being stored under a variable
+dicto = extract_json()
+ACCESS_TOKEN = dicto['ACCESS_TOKEN']
+VERIFY_TOKEN = dicto['VERIFY_TOKEN']
 
 #Assigning the name contributor to our app variable
 
