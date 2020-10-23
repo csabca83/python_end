@@ -120,11 +120,25 @@ class Messages:
 
     def message5(self):
 
-        if self.value < 1800 and self.value > 1720:
-            threading.Thread(target=self.bot.send_text_message, args=[f'{self.USER_ID_1}', 'Ügyes vagy :)']).start()
-            threading.Thread(target=self.bot.send_text_message, args=[f'{self.USER_ID_2}', 'Ügyes vagy :)']).start()
-        else:
+        from bs4 import BeautifulSoup
+        import requests
+
+        r = requests.get('https://transferwise.com/hu/currency-converter/huf-to-eur-rate')
+
+        soup = BeautifulSoup(r.content, 'lxml')
+
+        wrap_number_hufeur = soup.find('span', class_="text-success")
+
+        value = wrap_number_hufeur.text
+
+        value = float(value.replace(",", "."))
+
+        if value < 0.0028:
             pass
+
+        else:
+            threading.Thread(target=self.bot.send_text_message, args=[f'{self.USER_ID_1}', '0.0028 érték felett van a forint, válthatsz.']).start()
+            threading.Thread(target=self.bot.send_text_message, args=[f'{self.USER_ID_2}', '0.0028 érték felett van a forint, válthatsz.']).start()
 
 #Created this if__main__ statement as well for heroku (because it can just execute a file during a specified time) and
 #we want also to import the functions without executing them directly during the import.
