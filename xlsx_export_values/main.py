@@ -23,7 +23,7 @@ sheet2 = workbook2.sheet_by_index(0)
 writeto = xw.Workbook(path3)
 output = writeto.add_worksheet()
 
-#The amount of repeated runs are equal to the amount cells in the given row in the 2nd excel sheet
+#The amount of repeated runs are equal to the amount of cells in the given row in the 2nd excel sheet
 for y in range(sheet2.nrows):
 
     #Using a different for loop for the items on the first list, the run is equal to the number of cells under the given column
