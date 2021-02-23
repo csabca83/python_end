@@ -18,6 +18,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 import os, boto3, json, time, requests, random, pickle
 
@@ -84,10 +85,18 @@ class Warmane(unittest.TestCase):
             "ftpProxy": proxy,
             "sslProxy": proxy
         }
-        self.driver = webdriver.Firefox(options=self.options,
-                                        capabilities=self.capabilities,
-                                        firefox_profile=self.profile, 
-                                        executable_path="./geckodriver")
+        setting_up = True
+
+        while setting_up == True:
+            try:
+                self.driver = webdriver.Firefox(options=self.options,
+                                                capabilities=self.capabilities,
+                                                firefox_profile=self.profile, 
+                                                executable_path="./geckodriver")
+                setting_up = False
+            except:
+                print("Driver unexpectedly closed, retrying....")
+        
         self.driver.set_page_load_timeout(20)
 
     def save_cookies(self):
@@ -253,7 +262,7 @@ class Warmane(unittest.TestCase):
         try:
             self.driver.get(self.startpage)
             try:
-                self.load_cookies()
+                #self.load_cookies()
                 time.sleep(2)
                 self.driver.find_element_by_class_name("navigation-logo")
                 self.driver.refresh()
@@ -373,6 +382,10 @@ class Warmane(unittest.TestCase):
                         if n == 0 or n < 0:
                             print("Unsuccessful tries")
                             os._exit(os.EX_OK)
+
+                        elif n == 3:
+                            self.captcha(n-1)
+
                         else:
                             proxy = self.get_proxies()
                             self.setUp(proxy)
@@ -387,6 +400,9 @@ class Warmane(unittest.TestCase):
                         print("Unsuccessful tries")
                         os._exit(os.EX_OK)
 
+                    elif n == 3:
+                        self.captcha(n-1)
+
                     else:
 
                         proxy = self.get_proxies()
@@ -398,7 +414,12 @@ class Warmane(unittest.TestCase):
 
             if n == 0 or n < 0:
                 print("Unsuccessful tries")
+                self.send_text_message(["Unsuccessful try, please try to run the script chmod +x geckodriver && python collect.py manually on https://dashboard.heroku.com/apps/warmane-app ."])
+                time.sleep(15)
                 os._exit(os.EX_OK)
+
+            elif n == 3:
+                self.captcha(n-1)
 
             else:
 
@@ -420,11 +441,27 @@ class Warmane(unittest.TestCase):
                 print("MFA wasn't requested")
                 pass
         else:
-            self.driver.switch_to.default_content()
+            intercept = True
+            while intercept == True:
+                try:
+                    self.driver.switch_to.default_content()
+                    self.driver.find_element_by_id("userID").send_keys(self.warmane_acc)
+                    self.driver.find_element_by_id("userPW").send_keys(self.warmane_pass)
+                    self.driver.find_element_by_xpath("//button[@type='submit']").click()
+                    intercept = False
 
-            self.driver.find_element_by_id("userID").send_keys(self.warmane_acc)
-            self.driver.find_element_by_id("userPW").send_keys(self.warmane_pass)
-            self.driver.find_element_by_xpath("//button[@type='submit']").click()
+                except ElementClickInterceptedException:
+                    print("Click interception happened retrying captcha.")
+                    self.driver.refresh()
+                    self.captcha(5)
+                    self.driver.switch_to.default_content()
+                    self.driver.find_element_by_id("userID").send_keys(self.warmane_acc)
+                    self.driver.find_element_by_id("userPW").send_keys(self.warmane_pass)
+                    self.driver.find_element_by_xpath("//button[@type='submit']").click()
+                    intercept = False
+
+                except:
+                    pass
 
             print("Added UserID and Password and clicked on login")
             self.driver.implicitly_wait(10)
@@ -450,16 +487,16 @@ class Warmane(unittest.TestCase):
             current_points = self.driver.find_element_by_class_name("myPoints")
             self.log_list.append(f"Your current points are: {current_points.text}")
             self.log_list.append("------------------")
-            self.save_cookies()
-            print("Cookies were saved")
+            #self.save_cookies()
+            #print("Cookies were saved")
         except NoSuchElementException:
             print("Daily points were already collected")
             self.log_list.append("Daily points were already collected")
             current_points = self.driver.find_element_by_class_name("myPoints")
             self.log_list.append(f"Your current points are: {current_points.text}")
             self.log_list.append("------------------")
-            self.save_cookies()
-            print("Cookies were saved")
+            #self.save_cookies()
+            #print("Cookies were saved")
             self.driver.quit()
 
         except:
@@ -479,6 +516,13 @@ class Warmane(unittest.TestCase):
 
     def tearDown(self):
         self.wait_between(21.13, 31.05)
+        
 
 if __name__ == "__main__":
-    unittest.main()
+    response = (unittest.main(exit=False).result.errors)
+
+    if len(response) != 0:
+        Warmane().send_text_message(response)
+        Warmane().driver.quit()
+    else:
+        pass
